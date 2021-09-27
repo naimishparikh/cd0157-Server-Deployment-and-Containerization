@@ -47,6 +47,8 @@ def require_jwt(function):
         if not 'Authorization' in request.headers:
             abort(401)
         data = request.headers['Authorization']
+        LOG.info("data from request.headers type %s" % type(data))
+        LOG.info("data from request.headers %s" %data)
         token = str.replace(str(data), 'Bearer ', '')
         try:
             jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
@@ -69,7 +71,9 @@ def auth():
     """
     request_data = request.get_json()
     email = request_data.get('email')
+    LOG.info("In post auth email %s" %email)
     password = request_data.get('password')
+    LOG.info("In post auth password %s" %password)
     if not email:
         LOG.error("No email provided")
         return jsonify({"message": "Missing parameter: email"}, 400)
@@ -77,8 +81,9 @@ def auth():
         LOG.error("No password provided")
         return jsonify({"message": "Missing parameter: password"}, 400)
     body = {'email': email, 'password': password}
-
+    LOG.info("body type %s" % type(body))
     user_data = body
+    LOG.info("user_data type %s" %type(user_data))
 
     return jsonify(token=_get_jwt(user_data).decode('utf-8'))
 
@@ -91,9 +96,13 @@ def decode_jwt():
     if not 'Authorization' in request.headers:
         abort(401)
     data = request.headers['Authorization']
+    LOG.info("data type %s" % type(data))
+    LOG.info("data  %s" % data)
+
     token = str.replace(str(data), 'Bearer ', '')
     try:
         data = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        LOG.info("data token type %s" % type(data))
     except: # pylint: disable=bare-except
         abort(401)
 
@@ -109,7 +118,11 @@ def _get_jwt(user_data):
     payload = {'exp': exp_time,
                'nbf': datetime.datetime.utcnow(),
                'email': user_data['email']}
-    return jwt.encode(payload, JWT_SECRET, algorithm='HS256')
+    LOG.info("payload type %s" % type(payload))
+    token=jwt.encode(payload, JWT_SECRET, algorithm='HS256')
+    LOG.info("in get_jwt token type %s" % type(token))
+    return token
+
 
 if __name__ == '__main__':
-    APP.run(host='127.0.0.1', port=8080, debug=True)
+    APP.run(host='127.0.0.1', port=5000, debug=True)
