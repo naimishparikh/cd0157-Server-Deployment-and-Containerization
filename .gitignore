@@ -30,3 +30,5 @@ htmlcov/
 
 .github/**
 .env_file
+./aws-auth-patch1.yml
+./aws-auth-patch_tmp.yml
